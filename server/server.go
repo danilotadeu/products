@@ -8,9 +8,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/danilotadeu/star_wars/api"
-	"github.com/danilotadeu/star_wars/app"
-	"github.com/danilotadeu/star_wars/store"
+	"github.com/danilotadeu/products/api"
+	"github.com/danilotadeu/products/app"
+	"github.com/danilotadeu/products/store"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -42,7 +42,7 @@ func (e *server) Start() {
 	}))
 
 	e.Db = e.ConnectDatabase()
-	e.Store = store.Register(e.Db, os.Getenv("URL_STARWARS_API"))
+	e.Store = store.Register(e.Db)
 	e.App = app.Register(e.Store)
 	api.Register(e.App, os.Getenv("PORT"))
 

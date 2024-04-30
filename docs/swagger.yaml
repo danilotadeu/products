@@ -1,4 +1,3 @@
-basePath: /api
 definitions:
   errors_handler.ErrorsResponse:
     properties:
@@ -14,57 +13,39 @@ definitions:
       previous_page:
         type: integer
     type: object
-  planet.Film:
+  product.ProductDB:
     properties:
-      created_at:
-        type: string
-      director:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      release_date:
-        type: string
-    type: object
-  planet.PlanetDB:
-    properties:
-      climate:
-        type: string
       created_at:
         type: string
       deleted_at:
         type: string
-      films:
-        items:
-          $ref: '#/definitions/planet.Film'
-        type: array
       id:
         type: integer
       name:
         type: string
-      terrain:
-        type: string
+      quantity:
+        type: integer
+    required:
+    - name
+    - quantity
     type: object
-  planet.ResponsePlanets:
+  product.ResponseProducts:
     properties:
       data:
         items:
-          $ref: '#/definitions/planet.PlanetDB'
+          $ref: '#/definitions/product.ProductDB'
         type: array
       pagination:
         $ref: '#/definitions/generic.Pagination'
     type: object
 info:
   contact: {}
-  title: Star Wars API
-  version: "1.0"
 paths:
-  /planets:
+  /api/products:
     get:
       consumes:
       - application/json
-      description: get planets
+      description: get products
       parameters:
       - description: page
         in: query
@@ -84,7 +65,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/planet.ResponsePlanets'
+            $ref: '#/definitions/product.ResponseProducts'
         "400":
           description: Bad Request
           schema:
@@ -97,16 +78,49 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors_handler.ErrorsResponse'
-      summary: List planets
+      summary: List products
       tags:
-      - planets
-  /planets/{id}:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Endpoint to create products
+      parameters:
+      - description: Request Product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/product.ProductDB'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/product.ProductDB'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors_handler.ErrorsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors_handler.ErrorsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors_handler.ErrorsResponse'
+      summary: Endpoint to create products
+      tags:
+      - products
+  /api/products/{id}:
     delete:
       consumes:
       - application/json
-      description: delete planet by ID
+      description: delete products by ID
       parameters:
-      - description: Planet ID
+      - description: Product ID
         in: path
         name: id
         required: true
@@ -128,15 +142,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors_handler.ErrorsResponse'
-      summary: Delete a planet
+      summary: Delete a products
       tags:
-      - planets
+      - products
     get:
       consumes:
       - application/json
-      description: get planet by ID
+      description: get product by ID
       parameters:
-      - description: Planet ID
+      - description: Product ID
         in: path
         name: id
         required: true
@@ -147,7 +161,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/planet.PlanetDB'
+            $ref: '#/definitions/product.ProductDB'
         "400":
           description: Bad Request
           schema:
@@ -160,7 +174,40 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/errors_handler.ErrorsResponse'
-      summary: Show a planet
+      summary: Show a product
       tags:
-      - planets
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Endpoint to update products
+      parameters:
+      - description: Request Product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/product.ProductDB'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/product.ProductDB'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors_handler.ErrorsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors_handler.ErrorsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors_handler.ErrorsResponse'
+      summary: Endpoint to update products
+      tags:
+      - products
 swagger: "2.0"

@@ -1,4 +1,4 @@
-package planet
+package product
 
 import (
 	"context"
@@ -8,26 +8,26 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/danilotadeu/star_wars/app"
-	mockAppPlanet "github.com/danilotadeu/star_wars/mock/app/planet"
-	planetModel "github.com/danilotadeu/star_wars/model/planet"
+	"github.com/danilotadeu/products/app"
+	mockAppProduct "github.com/danilotadeu/products/mock/app/product"
+	productModel "github.com/danilotadeu/products/model/product"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
-	"gopkg.in/go-playground/assert.v1"
+	"gotest.tools/v3/assert"
 )
 
 func TestHandlerDelete(t *testing.T) {
-	endpoint := "/planets/:planetId"
+	endpoint := "/products/:id"
 	cases := map[string]struct {
 		InputParamID       string
 		ExpectedErr        error
 		ExpectedStatusCode int
-		PrepareMockApp     func(mockPlanetApp *mockAppPlanet.MockApp)
+		PrepareMockApp     func(mockPlanetApp *mockAppProduct.MockApp)
 	}{
 		"should delete the planet": {
 			InputParamID: "1",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 				mockPlanetApp.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(nil)
 			},
 			ExpectedStatusCode: http.StatusNoContent,
@@ -35,22 +35,22 @@ func TestHandlerDelete(t *testing.T) {
 		"should throw error with parse int": {
 			InputParamID: "xpto",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 			},
 			ExpectedStatusCode: http.StatusBadRequest,
 		},
 		"should return with planet not found": {
 			InputParamID: "1",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(planetModel.ErrorPlanetNotFound)
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(productModel.ErrorProductNotFound)
 			},
 			ExpectedStatusCode: http.StatusNotFound,
 		},
 		"should throw error": {
 			InputParamID: "1",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 				mockPlanetApp.EXPECT().Delete(gomock.Any(), gomock.Any()).Return(fmt.Errorf("error"))
 			},
 			ExpectedStatusCode: http.StatusInternalServerError,
@@ -59,18 +59,18 @@ func TestHandlerDelete(t *testing.T) {
 	for name, cs := range cases {
 		t.Run(name, func(t *testing.T) {
 			ctrl, ctx := gomock.WithContext(context.Background(), t)
-			mockPlanetApp := mockAppPlanet.NewMockApp(ctrl)
-			cs.PrepareMockApp(mockPlanetApp)
+			mockAppProduct := mockAppProduct.NewMockApp(ctrl)
+			cs.PrepareMockApp(mockAppProduct)
 
 			h := apiImpl{
 				apps: &app.Container{
-					Planet: mockPlanetApp,
+					Product: mockAppProduct,
 				},
 			}
 
 			app := fiber.New()
-			app.Delete(endpoint, h.planetDelete)
-			req := httptest.NewRequest(http.MethodDelete, strings.ReplaceAll(endpoint, ":planetId", cs.InputParamID), nil).WithContext(ctx)
+			app.Delete(endpoint, h.productDelete)
+			req := httptest.NewRequest(http.MethodDelete, strings.ReplaceAll(endpoint, ":id", cs.InputParamID), nil).WithContext(ctx)
 			req.Header.Set("Content-Type", fiber.MIMEApplicationJSON)
 			resp, err := app.Test(req, -1)
 			if err != nil {
@@ -85,22 +85,21 @@ func TestHandlerDelete(t *testing.T) {
 }
 
 func TestHandlerGetPlanetByID(t *testing.T) {
-	endpoint := "/planets/:planetId"
+	endpoint := "/products/:id"
 	cases := map[string]struct {
 		InputParamID       string
 		ExpectedErr        error
 		ExpectedStatusCode int
-		PrepareMockApp     func(mockPlanetApp *mockAppPlanet.MockApp)
+		PrepareMockApp     func(mockPlanetApp *mockAppProduct.MockApp)
 	}{
 		"should return success with planet": {
 			InputParamID: "1",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetOneByID(gomock.Any(), gomock.Any()).Return(&planetModel.PlanetDB{
-					ID:      1,
-					Name:    "Planet 1",
-					Climate: "Climate 1",
-					Terrain: "Terrain 1",
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetOneByID(gomock.Any(), gomock.Any()).Return(&productModel.ProductDB{
+					ID:       1,
+					Name:     "Planet 1",
+					Quantity: 1,
 				}, nil)
 			},
 			ExpectedStatusCode: http.StatusOK,
@@ -108,22 +107,22 @@ func TestHandlerGetPlanetByID(t *testing.T) {
 		"should throw error with parse int": {
 			InputParamID: "xpto",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 			},
 			ExpectedStatusCode: http.StatusBadRequest,
 		},
 		"should return with planet not found": {
 			InputParamID: "1",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetOneByID(gomock.Any(), gomock.Any()).Return(nil, planetModel.ErrorPlanetNotFound)
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetOneByID(gomock.Any(), gomock.Any()).Return(nil, productModel.ErrorProductNotFound)
 			},
 			ExpectedStatusCode: http.StatusNotFound,
 		},
 		"should throw error": {
 			InputParamID: "1",
 			ExpectedErr:  nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 				mockPlanetApp.EXPECT().GetOneByID(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("error"))
 			},
 			ExpectedStatusCode: http.StatusInternalServerError,
@@ -132,18 +131,18 @@ func TestHandlerGetPlanetByID(t *testing.T) {
 	for name, cs := range cases {
 		t.Run(name, func(t *testing.T) {
 			ctrl, ctx := gomock.WithContext(context.Background(), t)
-			mockPlanetApp := mockAppPlanet.NewMockApp(ctrl)
-			cs.PrepareMockApp(mockPlanetApp)
+			mockAppProduct := mockAppProduct.NewMockApp(ctrl)
+			cs.PrepareMockApp(mockAppProduct)
 
 			h := apiImpl{
 				apps: &app.Container{
-					Planet: mockPlanetApp,
+					Product: mockAppProduct,
 				},
 			}
 
 			app := fiber.New()
-			app.Get(endpoint, h.planet)
-			req := httptest.NewRequest(http.MethodGet, strings.ReplaceAll(endpoint, ":planetId", cs.InputParamID), nil).WithContext(ctx)
+			app.Get(endpoint, h.product)
+			req := httptest.NewRequest(http.MethodGet, strings.ReplaceAll(endpoint, ":id", cs.InputParamID), nil).WithContext(ctx)
 			req.Header.Set("Content-Type", fiber.MIMEApplicationJSON)
 			resp, err := app.Test(req, -1)
 			if err != nil {
@@ -163,24 +162,23 @@ func TestHandlerGetPlanets(t *testing.T) {
 		InputLimit         string
 		ExpectedErr        error
 		ExpectedStatusCode int
-		PrepareMockApp     func(mockPlanetApp *mockAppPlanet.MockApp)
+		PrepareMockApp     func(mockPlanetApp *mockAppProduct.MockApp)
 	}{
 		"should return success with planet": {
 			InputPage:   "1",
 			InputLimit:  "10",
 			ExpectedErr: nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*planetModel.PlanetDB{
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*productModel.ProductDB{
 					{
-						ID:      1,
-						Name:    "Planet 1",
-						Climate: "Climate 1",
-						Terrain: "Terrain 1",
+						ID:       1,
+						Name:     "Planet 1",
+						Quantity: 1,
 					},
 				}, nil)
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, planetModel.ErrorPlanetNotFound)
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, productModel.ErrorProductNotFound)
 				var total int64 = 1
-				mockPlanetApp.EXPECT().GetTotalPlanets(gomock.Any()).Return(&total, nil)
+				mockPlanetApp.EXPECT().GetTotalProducts(gomock.Any()).Return(&total, nil)
 			},
 			ExpectedStatusCode: http.StatusOK,
 		},
@@ -188,16 +186,15 @@ func TestHandlerGetPlanets(t *testing.T) {
 			InputPage:   "1",
 			InputLimit:  "10",
 			ExpectedErr: nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*planetModel.PlanetDB{
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*productModel.ProductDB{
 					{
-						ID:      1,
-						Name:    "Planet 1",
-						Climate: "Climate 1",
-						Terrain: "Terrain 1",
+						ID:       1,
+						Name:     "Planet 1",
+						Quantity: 1,
 					},
 				}, nil)
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("error"))
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("error"))
 			},
 			ExpectedStatusCode: http.StatusInternalServerError,
 		},
@@ -205,52 +202,50 @@ func TestHandlerGetPlanets(t *testing.T) {
 			InputPage:   "1",
 			InputLimit:  "10",
 			ExpectedErr: nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*planetModel.PlanetDB{
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*productModel.ProductDB{
 					{
-						ID:      1,
-						Name:    "Planet 1",
-						Climate: "Climate 1",
-						Terrain: "Terrain 1",
+						ID:       1,
+						Name:     "Planet 1",
+						Quantity: 1,
 					},
 				}, nil)
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*planetModel.PlanetDB{
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]*productModel.ProductDB{
 					{
-						ID:      1,
-						Name:    "Planet 1",
-						Climate: "Climate 1",
-						Terrain: "Terrain 1",
+						ID:       1,
+						Name:     "Planet 1",
+						Quantity: 1,
 					},
 				}, nil)
-				mockPlanetApp.EXPECT().GetTotalPlanets(gomock.Any()).Return(nil, fmt.Errorf("error"))
+				mockPlanetApp.EXPECT().GetTotalProducts(gomock.Any()).Return(nil, fmt.Errorf("error"))
 			},
 			ExpectedStatusCode: http.StatusInternalServerError,
 		},
 		"should throw error with parse int page": {
 			ExpectedErr: nil,
 			InputPage:   "xpto",
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 			},
 			ExpectedStatusCode: http.StatusBadRequest,
 		},
 		"should throw error with parse int limit": {
 			ExpectedErr: nil,
 			InputLimit:  "xpto",
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
 			},
 			ExpectedStatusCode: http.StatusBadRequest,
 		},
 		"should return with planet not found": {
 			ExpectedErr: nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, planetModel.ErrorPlanetNotFound)
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, productModel.ErrorProductNotFound)
 			},
 			ExpectedStatusCode: http.StatusNotFound,
 		},
 		"should throw error": {
 			ExpectedErr: nil,
-			PrepareMockApp: func(mockPlanetApp *mockAppPlanet.MockApp) {
-				mockPlanetApp.EXPECT().GetAllPlanets(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("error"))
+			PrepareMockApp: func(mockPlanetApp *mockAppProduct.MockApp) {
+				mockPlanetApp.EXPECT().GetAllProducts(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("error"))
 			},
 			ExpectedStatusCode: http.StatusInternalServerError,
 		},
@@ -258,17 +253,17 @@ func TestHandlerGetPlanets(t *testing.T) {
 	for name, cs := range cases {
 		t.Run(name, func(t *testing.T) {
 			ctrl, ctx := gomock.WithContext(context.Background(), t)
-			mockPlanetApp := mockAppPlanet.NewMockApp(ctrl)
-			cs.PrepareMockApp(mockPlanetApp)
+			mockAppProduct := mockAppProduct.NewMockApp(ctrl)
+			cs.PrepareMockApp(mockAppProduct)
 
 			h := apiImpl{
 				apps: &app.Container{
-					Planet: mockPlanetApp,
+					Product: mockAppProduct,
 				},
 			}
 			endpoint := "/planets"
 			app := fiber.New()
-			app.Get(endpoint, h.planets)
+			app.Get(endpoint, h.products)
 
 			if len(cs.InputPage) > 0 && len(cs.InputLimit) > 0 {
 				endpoint += "?page=" + cs.InputPage + "&limit=" + cs.InputLimit

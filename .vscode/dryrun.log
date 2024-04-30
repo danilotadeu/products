@@ -1,8 +1,8 @@
 make --dry-run --always-make --keep-going --print-directory
-make: Entering directory `/Users/danilotadeuoliveirasilva/Desktop/Projects/star_wars'
+make: Entering directory `/Users/danilotadeuoliveirasilva/Desktop/Projects/products'
 go install github.com/golang/mock/mockgen@latest
 go install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 go install github.com/swaggo/swag/cmd/swag@latest
 go get
-make: Leaving directory `/Users/danilotadeuoliveirasilva/Desktop/Projects/star_wars'
+make: Leaving directory `/Users/danilotadeuoliveirasilva/Desktop/Projects/products'
  

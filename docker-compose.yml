@@ -7,7 +7,7 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: star_wars
+      MYSQL_DATABASE: products
       MYSQL_ROOT_PASSWORD: kgc1MGtg6DWXRN6h6SmM
       MYSQL_USER: luke
       MYSQL_PASSWORD: xQlpKD95kp20Wa1JAX6O

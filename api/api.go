@@ -5,13 +5,17 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/danilotadeu/star_wars/api/planet"
-	"github.com/danilotadeu/star_wars/app"
-	_ "github.com/danilotadeu/star_wars/docs"
+	"github.com/danilotadeu/products/api/product"
+	"github.com/danilotadeu/products/app"
+	_ "github.com/danilotadeu/products/docs"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 	"github.com/sirupsen/logrus"
 )
+
+// validate is a validator package
+var validate *validator.Validate
 
 // @title		Star Wars API
 // @version		1.0
@@ -29,8 +33,10 @@ func Register(apps *app.Container, port string) {
 
 	baseAPI := fiberRoute.Group("/api")
 
+	validate = validator.New(validator.WithRequiredStructEnabled())
+
 	// Planets
-	planet.NewAPI(baseAPI.Group("/planets"), apps)
+	product.NewAPI(baseAPI.Group("/products"), apps, validate)
 
 	fiberRoute.Get("/swagger/*", swagger.HandlerDefault)
 

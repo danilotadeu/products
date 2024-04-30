@@ -1,15 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Star Wars API",
-        "contact": {},
-        "version": "1.0"
+        "contact": {}
     },
-    "basePath": "/api",
     "paths": {
-        "/planets": {
+        "/api/products": {
             "get": {
-                "description": "get planets",
+                "description": "get products",
                 "consumes": [
                     "application/json"
                 ],
@@ -17,9 +14,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "planets"
+                    "products"
                 ],
-                "summary": "List planets",
+                "summary": "List products",
                 "parameters": [
                     {
                         "type": "integer",
@@ -44,7 +41,57 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/planet.ResponsePlanets"
+                            "$ref": "#/definitions/product.ResponseProducts"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors_handler.ErrorsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors_handler.ErrorsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors_handler.ErrorsResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Endpoint to create products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Endpoint to create products",
+                "parameters": [
+                    {
+                        "description": "Request Product",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/product.ProductDB"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/product.ProductDB"
                         }
                     },
                     "400": {
@@ -68,9 +115,9 @@
                 }
             }
         },
-        "/planets/{id}": {
+        "/api/products/{id}": {
             "get": {
-                "description": "get planet by ID",
+                "description": "get product by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -78,13 +125,13 @@
                     "application/json"
                 ],
                 "tags": [
-                    "planets"
+                    "products"
                 ],
-                "summary": "Show a planet",
+                "summary": "Show a product",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Planet ID",
+                        "description": "Product ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -94,7 +141,57 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/planet.PlanetDB"
+                            "$ref": "#/definitions/product.ProductDB"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/errors_handler.ErrorsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/errors_handler.ErrorsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/errors_handler.ErrorsResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Endpoint to update products",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Endpoint to update products",
+                "parameters": [
+                    {
+                        "description": "Request Product",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/product.ProductDB"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/product.ProductDB"
                         }
                     },
                     "400": {
@@ -118,7 +215,7 @@
                 }
             },
             "delete": {
-                "description": "delete planet by ID",
+                "description": "delete products by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -126,13 +223,13 @@
                     "application/json"
                 ],
                 "tags": [
-                    "planets"
+                    "products"
                 ],
-                "summary": "Delete a planet",
+                "summary": "Delete a products",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Planet ID",
+                        "description": "Product ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -187,62 +284,37 @@
                 }
             }
         },
-        "planet.Film": {
+        "product.ProductDB": {
             "type": "object",
+            "required": [
+                "name",
+                "quantity"
+            ],
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "director": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "release_date": {
-                    "type": "string"
-                }
-            }
-        },
-        "planet.PlanetDB": {
-            "type": "object",
-            "properties": {
-                "climate": {
-                    "type": "string"
-                },
                 "created_at": {
                     "type": "string"
                 },
                 "deleted_at": {
                     "type": "string"
                 },
-                "films": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/planet.Film"
-                    }
-                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
-                "terrain": {
-                    "type": "string"
+                "quantity": {
+                    "type": "integer"
                 }
             }
         },
-        "planet.ResponsePlanets": {
+        "product.ResponseProducts": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/planet.PlanetDB"
+                        "$ref": "#/definitions/product.ProductDB"
                     }
                 },
                 "pagination": {

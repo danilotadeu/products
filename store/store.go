@@ -3,8 +3,7 @@ package store
 import (
 	"database/sql"
 
-	"github.com/danilotadeu/star_wars/store/film"
-	"github.com/danilotadeu/star_wars/store/planet"
+	"github.com/danilotadeu/products/store/product"
 	"github.com/sirupsen/logrus"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,15 +11,13 @@ import (
 
 // Container ...
 type Container struct {
-	Planet planet.Store
-	Film   film.Store
+	Product product.Store
 }
 
 // Register store container
-func Register(db *sql.DB, urlStarWars string) *Container {
+func Register(db *sql.DB) *Container {
 	container := &Container{
-		Planet: planet.NewStore(db, urlStarWars),
-		Film:   film.NewStore(db, urlStarWars),
+		Product: product.NewStore(db),
 	}
 
 	logrus.WithFields(logrus.Fields{"trace": "store"}).Infof("Registered - Store")

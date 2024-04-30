@@ -19,8 +19,8 @@ DB_USER=luke
 DB_PASSWORD=xQlpKD95kp20Wa1JAX6O
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=star_wars
-MIGRATE_URL=mysql://luke:xQlpKD95kp20Wa1JAX6O@tcp\(127.0.0.1:3306\)/star_wars?multiStatements=true
+DB_DATABASE=products
+MIGRATE_URL=mysql://luke:xQlpKD95kp20Wa1JAX6O@tcp\(127.0.0.1:3306\)/products?multiStatements=true
 URL_STARWARS_API=https://swapi.dev/api
 ```
 

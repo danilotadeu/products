@@ -5,13 +5,11 @@ install:
 	go install github.com/golang/mock/mockgen@latest
 	go install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	go install github.com/swaggo/swag/cmd/swag@latest
+	go get github.com/golang/mock/
 	go get
 
 run:
 	go run main.go
-
-import:
-	go run imports/init.go
 
 .PHONY: mock
 mock:
@@ -24,6 +22,10 @@ test/cov:
 
 test:
 	go test ./...
+
+.PHONY: docs
+docs:
+	swag init
 
 migrateup:
 	migrate -path db/migrations -database ${MIGRATE_URL} -verbose up
